@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inkbound — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="auth.css">
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <section class="auth-hero">
+      <div>
+        <div class="auth-brand"><span class="dot"></span>Inkbound</div>
+        <h1>Welcome back.</h1>
+        <p>Sign in to keep your PDF edits, saved exports, and community posts connected to your account.</p>
+      </div>
+      <div class="auth-points">
+        <div class="auth-point"><strong>Save cloud versions</strong><span>Keep edited PDFs in Firebase Storage.</span></div>
+        <div class="auth-point"><strong>Session stays ready</strong><span>Firebase Auth persistence keeps you signed in on this device.</span></div>
+      </div>
+    </section>
+    <section class="auth-form-wrap">
+      <form id="signinForm" class="auth-form">
+        <h2>Sign in</h2>
+        <p class="sub">Use your email and password to open the editor.</p>
+        <div class="auth-row">
+          <label for="signinEmail">Email</label>
+          <input type="email" id="signinEmail" autocomplete="email" required>
+        </div>
+        <div class="auth-row">
+          <label for="signinPassword">Password</label>
+          <input type="password" id="signinPassword" autocomplete="current-password" required>
+        </div>
+        <div class="auth-error" id="signinError"></div>
+        <button class="auth-btn auth-btn-primary" type="submit">Sign in</button>
+        <p class="auth-note">New here? <a href="signup.html">Create an account</a>.</p>
+      </form>
+    </section>
+  </div>
+</div>
+<script src="auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inkbound — PDF Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+</head>
+<body>
+
+<div id="app" class="tool-select">
+
+  <!-- ===================== LEFT TOOLBOX ===================== -->
+  <aside id="toolbox">
+    <div class="brand">
+      <div class="brand-mark"><span class="dot"></span>Inkbound</div>
+      <div class="brand-sub">PDF markup &amp; annotate</div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Tools</div>
+      <div class="tool-grid" id="toolGrid">
+        <button class="tool-btn active" data-tool="select">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l7 16 2-7 7-2-16-7z"/></svg>
+          Select / Pan
+        </button>
+        <button class="tool-btn" data-tool="pen">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+          Pen
+        </button>
+        <button class="tool-btn" data-tool="highlight">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-6 6v3h3l6-6"/><path d="M14 6l4 4"/><path d="M12.5 4.5l7 7L17 14l-7-7 2.5-2.5z"/></svg>
+          Highlight
+        </button>
+        <button class="tool-btn" data-tool="text">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+          Add Text
+        </button>
+        <button class="tool-btn" data-tool="image">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Add Image
+        </button>
+        <button class="tool-btn" data-tool="symbol">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3L21 9l-5 4.6L17.4 21 12 17.6 6.6 21 8 13.6 3 9l6.1-.7z"/></svg>
+          Add Symbol
+        </button>
+        <button class="tool-btn" data-tool="erase">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l5 5-9.5 9.5H6L3 14.5 16 3z"/><path d="M9 20h12"/></svg>
+          Eraser
+        </button>
+      </div>
+    </div>
+
+    <div class="rail-section" id="colorSection">
+      <div class="rail-label">Color &amp; size</div>
+      <div class="field-row">
+        <label>Color</label>
+        <input type="color" id="colorPicker" value="#ff3b30">
+      </div>
+      <div class="swatches" id="swatches"></div>
+      <div class="field-row">
+        <label>Size</label>
+        <input type="range" id="sizeSlider" min="1" max="40" value="4">
+        <span class="size-val" id="sizeVal">4</span>
+      </div>
+    </div>
+
+    <div class="rail-section" id="symbolSection" style="display:none;">
+      <div class="rail-label">Symbol</div>
+      <div class="symbol-grid" id="symbolGrid"></div>
+    </div>
+
+    <div class="rail-section" id="fontSection" style="display:none;">
+      <div class="rail-label">Text style</div>
+      <div class="field-row">
+        <label>Font size</label>
+        <input type="range" id="fontSizeSlider" min="8" max="64" value="18">
+        <span class="size-val" id="fontSizeVal">18</span>
+      </div>
+    </div>
+
+    <div class="rail-actions">
+      <button class="btn btn-ghost" id="undoBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-7"/></svg>
+        Undo last stroke
+      </button>
+      <button class="btn btn-danger" id="clearPageBtn">Clear this page</button>
+      <button class="btn btn-primary" id="exportBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+        Export PDF
+      </button>
+      <button class="btn btn-ghost" id="mergeBtn" title="Combine every open PDF into one file, in tab order">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><path d="M7 11v4a2 2 0 0 0 2 2h6"/><path d="M17 11v3"/></svg>
+        Merge all PDFs
+      </button>
+      <button class="btn btn-ghost" id="uploadBtnRail">Upload PDF(s)</button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN AREA ===================== -->
+  <div id="main">
+    
+    <div id="sessionBar" class="session-bar">
+      <div class="session-left">
+        <div id="authStatus" class="auth-status">Checking session…</div>
+      </div>
+      <div class="session-right">
+        <button type="button" id="openCommunityBtn" class="session-btn">Community</button>
+        <a href="signin.html" id="signInLink" class="session-link">Sign in</a>
+        <button type="button" id="signOutBtn" class="session-link-btn">Sign out</button>
+      </div>
+    </div>
+
+    <div id="tabbar">
+      <div class="tab-add" id="tabAddBtn" title="Open PDF">+</div>
+    </div>
+
+    <div id="viewerWrap">
+      <div id="emptyState">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <h2>No PDFs open yet</h2>
+        <p>Upload one or more PDFs to start marking them up — draw, highlight, stamp, and write directly on the page.</p>
+        <button class="btn btn-primary" id="uploadBtnEmpty">Upload PDF(s)</button>
+      </div>
+      <!-- per-document viewer containers injected here -->
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="application/pdf" multiple hidden>
+<input type="file" id="imageFileInput" accept="image/*" hidden>
+
+<div id="textPopover">
+  <textarea id="textPopoverInput" placeholder="Type text…"></textarea>
+  <div class="row">
+    <button class="btn btn-ghost" id="textPopoverCancel">Cancel</button>
+    <button class="btn btn-primary" id="textPopoverOk">Place</button>
+  </div>
+</div>
+
+<div class="hint-banner" id="hintBanner"></div>
+
+<div id="communityPanel" class="community-panel hidden" aria-hidden="true">
+  <div class="community-panel-head">
+    <div>
+      <h3>Community chat</h3>
+      <p>Post short updates, questions, and tips for other logged-in users.</p>
+    </div>
+    <button type="button" id="closeCommunityBtn" class="community-close">✕</button>
+  </div>
+
+  <div id="communityMessages" class="community-messages"></div>
+
+  <form id="communityForm" class="community-form">
+    <textarea id="communityInput" rows="3" maxlength="300" placeholder="Write a message…"></textarea>
+    <div class="community-form-row">
+      <span id="communityHint" class="community-hint">Only signed-in users can post.</span>
+      <button type="submit" class="btn btn-primary">Post</button>
+    </div>
+  </form>
+</div>
+
+<div id="eraserCursor"></div>
+
+<script src="script.js"></script>
+
+<script src="editor-patches.js"></script>
+<script src="cloud-sync.js"></script>
+<script src="community.js"></script>
+
+</body>
+</html>

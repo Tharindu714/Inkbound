@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inkbound — Sign up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="auth.css">
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <section class="auth-hero">
+      <div>
+        <div class="auth-brand"><span class="dot"></span>Inkbound</div>
+        <h1>Create your workspace.</h1>
+        <p>Make an account once, then come back fast with saved edits, user data, and your community identity ready.</p>
+      </div>
+      <div class="auth-points">
+        <div class="auth-point"><strong>Private PDF storage</strong><span>Store uploads under your own Firebase user folder.</span></div>
+        <div class="auth-point"><strong>Realtime community</strong><span>Join the chat once you are logged in.</span></div>
+      </div>
+    </section>
+    <section class="auth-form-wrap">
+      <form id="signupForm" class="auth-form">
+        <h2>Sign up</h2>
+        <p class="sub">Create a new account with email and password.</p>
+        <div class="auth-row">
+          <label for="signupName">Display name</label>
+          <input type="text" id="signupName" autocomplete="name" required>
+        </div>
+        <div class="auth-row">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" autocomplete="email" required>
+        </div>
+        <div class="auth-row">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" autocomplete="new-password" minlength="6" required>
+        </div>
+        <div class="auth-error" id="signupError"></div>
+        <button class="auth-btn auth-btn-primary" type="submit">Create account</button>
+        <p class="auth-note">Already have an account? <a href="signin.html">Sign in</a>.</p>
+      </form>
+    </section>
+  </div>
+</div>
+<script src="auth.js"></script>
+</body>
+</html>
